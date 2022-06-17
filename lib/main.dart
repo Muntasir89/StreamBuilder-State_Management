@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-void main() {
+void main(){
   runApp(MyApp());
 }
 
@@ -35,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late StreamSubscription mySubs;
 
-  int data = 0;
+  int counter = 0;
 
   Stream<int> getDummyDownloadProgress() async*{
     for(int i=1;i<=100;i++){
@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getDummyDownloadProgress().listen((event) {
       print(event);
       setState((){
-        data = event;
+        counter = event;
       });
     }, onError: (err){
       print(err);
@@ -66,13 +66,28 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Text(
-            "The Data added is: $data"
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text("You have pushed the button this many times:"),
+            StreamBuilder(
+                stream: getDummyDownloadProgress(),
+                builder: (_,snapshot){
+                  if(snapshot.hasData)
+                    return Text(snapshot.data.toString());
+                  else if(snapshot.hasError)
+                    return Text(snapshot.error.toString());
+                  else
+                    return Text("Loading");
+                }),
+          ],
+
+
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          myStreamController.sink.add(data);
+          myStreamController.sink.add(counter);
         },
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
